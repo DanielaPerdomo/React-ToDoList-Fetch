@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 
 const ToDoList = () => {
   const [newTask, setNewTask] = useState(""); //Nueva tarea
@@ -6,6 +7,25 @@ const ToDoList = () => {
   const handlerChange = (event) => {
     setNewTask(event.target.value)
   }
+async function getToDo(){
+  try { 
+    const response = await fetch("https://assets.breatheco.de/apis/fake/todos/user/DanielaPeromo" , {
+    method: "GET", 
+    headers: {"Content-Type": "application/json"} ,
+    // body: JSON.strigify([])
+    })
+    console.log(response)
+    if (response.status != 200  ){
+      console.log("Solicitud no enviada")
+      return
+    }
+    const body = await response.json() 
+    setTaskList(body)
+    console.log(body)
+    } catch(error){
+    console.log(error)
+  }
+}
   //Funcion Anade tareas
   const handlerTask =(event) => {
     if (event.key === "Enter"){
@@ -27,6 +47,9 @@ const ToDoList = () => {
   const deleteAllTask = ()=>{
     setTaskList ([])
   }
+  useEffect (()=>{
+    getToDo()
+  }, [])
   return (
     <div className="body">
       <div className="container">
@@ -39,9 +62,10 @@ const ToDoList = () => {
           />
         </div>
         <ul className="list-group">
-            {taskList.map((task, index)=>{ 
-              return <li className="list-group-item" key={index}> {task} <i className="delete fas fa-trash" onClick={() => deleteTask(index)}></i></li> 
-            })}
+              {taskList.map((task, index)=>{ 
+              console.log(task)
+              return <li className="list-group-item" key={index}> {task.label} <i className="delete fas fa-trash" onClick={() => deleteTask(index)}></i></li> 
+              })}
         </ul>
         <div>{taskList.length == 0
             ? "No hay tarea pendiente"
