@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 
-
+const URLAPI = "https://assets.breatheco.de/apis/fake/todos/user/DanielaPerdomo"
+const inicialTask =  {label: "", done: false}    // Tarea inicial
 const ToDoList = () => {
-  const [newTask, setNewTask] = useState(""); //Nueva tarea
+  const [newTask, setNewTask] = useState(inicialTask); //Nueva tarea
   const [taskList, setTaskList] = useState([]); //Lista de Tareas
   const handlerChange = (event) => {
-    setNewTask(event.target.value)
+    setNewTask({...newTask , label:event.target.value})
   }
+
+//Metodo GET
 async function getToDo(){
   try { 
-    const response = await fetch("https://assets.breatheco.de/apis/fake/todos/user/DanielaPeromo" , {
+    const response = await fetch("https://assets.breatheco.de/apis/fake/todos/user/DanielaPerdomo" , {
     method: "GET", 
     headers: {"Content-Type": "application/json"} ,
     // body: JSON.strigify([])
@@ -26,22 +29,55 @@ async function getToDo(){
     console.log(error)
   }
 }
-  //Funcion Anade tareas
-  const handlerTask =(event) => {
-    if (event.key === "Enter"){
-      if ( newTask.trim() != "") {
-        setTaskList([...taskList, newTask])
-        setNewTask("")
-      }
-      else {
-        alert('No hay tarea escrita') //Alert de que no ha escrito nada
-      }
+// Metodo PUT para actualizar la lista de tareas anadir / eliminar tareas
+async function updateTaskList(newTask){
+  try {
+    const response = await fetch("https://assets.breatheco.de/apis/fake/todos/user/DanielaPerdomo" ,{
+      method : "PUT" ,
+      headers: {"Content-Type": "application/json"} ,
+      body: JSON.stringify(newTask)
+    })
+    console.log(response)
+    if (response.status != 200  ){
+      console.log("Solicitud no enviada")
+      return
+    } 
+    getToDo()
+  } catch(error){
+    console.log(error)
+  }
+}
+  // Metodo eliminar usuario DELETE
+  async function deleteToDo(){
+    try {
+      const response = await fetch(URLAPI , {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json"}
+      })
+      if (response.status != 200){
+        console.log("No se pudo borrar las tareas")
+        return
+      } 
+    }catch(error){
+      console.log(error)
     }
   }
+    //Funcion Anade tareas
+    const handlerTask =(event) => {
+      if (event.key === "Enter"){
+        if ( newTask.label.trim() != "") {
+          updateTaskList([...taskList, newTask])
+          setNewTask(inicialTask)
+        }
+        else {
+          alert('No hay tarea escrita') //Alert de que no ha escrito nada
+        }
+      }
+    }
   //Eliminar Tareas
   const deleteTask =(indexTask)=>{
     let newTasks = taskList.filter((tasks, index) => index !== indexTask)
-    setTaskList(newTasks)
+    updateTaskList(newTasks)
   }
   //Funcion del Boton Borrar Tareas
   const deleteAllTask = ()=>{
@@ -57,7 +93,7 @@ async function getToDo(){
           <h1> Mi Lista de Tareas...!!!</h1>
         </div>
         <div className="entry">
-          <input type="text" value={newTask} placeholder="Añadir nueva tarea"
+          <input type="text" value={newTask.label} placeholder="Añadir nueva tarea"
           onChange={handlerChange} onKeyDown={handlerTask}
           />
         </div>
@@ -80,13 +116,3 @@ async function getToDo(){
 export default ToDoList;
 
 
-/*
-<div>
-  {taskList.length == 0 ? `${taskList.length} "No hay tarea pendiente"`
-: taskList.length == 1 ? `${taskList.length} "tarea pendiente"`
-: taskList.length > 1 "tareas pendientes"}
-</div>
-*/
-/*
-<div>{taskList.length == 0 ? 'No hay tareas': `${taskList.length} tareas pendientes`}</div>
-*/
