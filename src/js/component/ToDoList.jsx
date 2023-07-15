@@ -9,45 +9,44 @@ const ToDoList = () => {
     setNewTask({...newTask , label:event.target.value})
   }
 
-//Metodo GET
+//Metodo GET traer tareas / obtener datos
 async function getToDo(){
   try { 
     const response = await fetch("https://assets.breatheco.de/apis/fake/todos/user/DanielaPerdomo" , {
     method: "GET", 
-    headers: {"Content-Type": "application/json"} ,
-    // body: JSON.strigify([])
+    headers: {"Content-Type": "application/json"} , //documentacion
     })
     console.log(response)
-    if (response.status != 200  ){
-      console.log("Solicitud no enviada")
-      return
+    if (response.status == 404 ){
+      createUser()
+      return      // detener la funcion
     }
-    const body = await response.json() 
+    const body = await response.json() // Espera respuesta y la guarda en el Body
     setTaskList(body)
     console.log(body)
     } catch(error){
     console.log(error)
   }
 }
-// Metodo PUT para actualizar la lista de tareas anadir / eliminar tareas
+// Metodo PUT para actualizar la lista de tareas anadir / eliminar tareas /  Actualizar la lista de tareas
 async function updateTaskList(newTask){
   try {
     const response = await fetch("https://assets.breatheco.de/apis/fake/todos/user/DanielaPerdomo" ,{
       method : "PUT" ,
       headers: {"Content-Type": "application/json"} ,
-      body: JSON.stringify(newTask)
+      body: JSON.stringify(newTask)     //Quiero la nueva lista de tareas Actualiza la tareas con este array!!!
     })
     console.log(response)
     if (response.status != 200  ){
       console.log("Solicitud no enviada")
       return
     } 
-    getToDo()
+    getToDo() // Actualizamos y Traemos las tareas
   } catch(error){
     console.log(error)
   }
 }
-  // Metodo eliminar usuario DELETE
+  // Metodo eliminar usuario DELETE / Borrar tareas
   async function deleteToDo(){
     try {
       const response = await fetch(URLAPI , {
@@ -58,7 +57,25 @@ async function updateTaskList(newTask){
         console.log("No se pudo borrar las tareas")
         return
       } 
+      getToDo() //Llamamos al metodo despues de eliminarlo para traer nuevamente una lista de tareas
     }catch(error){
+      console.log(error)
+    }
+  }
+  // Metodo POST crear usuario
+  async function createUser(){
+    try {
+      const response = await fetch(URLAPI , {
+        method: "POST" ,
+        headers: {"Content-Type": "application/json"} ,
+        body: JSON.stringify([]) // DOCUMENTACION
+      })
+      if(response.status != 200) {
+        console.log("No se creo el usuario")
+        return
+      }
+      getToDo() // LLAMAMOS NUEVAMNETE EL GET PARA CREAR Y TRAER LA LISTA CON EL USUARIO
+    } catch (error) {
       console.log(error)
     }
   }
@@ -81,7 +98,7 @@ async function updateTaskList(newTask){
   }
   //Funcion del Boton Borrar Tareas
   const deleteAllTask = ()=>{
-    setTaskList ([])
+    deleteToDo()
   }
   useEffect (()=>{
     getToDo()
@@ -108,7 +125,8 @@ async function updateTaskList(newTask){
             : taskList.length == 1
             ? `${taskList.length} tarea pendiente`
             : `${taskList.length} tareas pendientes`}</div>
-          <button className="button" onClick={deleteAllTask}> Borrar Lista </button>
+            {/*PASAMOS LA FUNCION PARA BORRAR LA TAREAS */}
+          <button className="button" onClick={deleteAllTask}> Borrar Lista </button> 
       </div>
     </div>
   );
