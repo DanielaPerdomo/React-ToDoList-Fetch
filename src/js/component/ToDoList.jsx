@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const URLAPI = "https://assets.breatheco.de/apis/fake/todos/user/DanielaPerdomo"
+const URL_API = "https://assets.breatheco.de/apis/fake/todos/user/DanielaPerdomo"
 const inicialTask =  {label: "", done: false}    // Tarea inicial
 const ToDoList = () => {
   const [newTask, setNewTask] = useState(inicialTask); //Nueva tarea
@@ -12,7 +12,7 @@ const ToDoList = () => {
 //Metodo GET traer tareas / obtener datos
 async function getToDo(){
   try { 
-    const response = await fetch("https://assets.breatheco.de/apis/fake/todos/user/DanielaPerdomo" , {
+    const response = await fetch(URL_API , {
     method: "GET", 
     headers: {"Content-Type": "application/json"} , //documentacion
     })
@@ -31,7 +31,7 @@ async function getToDo(){
 // Metodo PUT para actualizar la lista de tareas anadir / eliminar tareas /  Actualizar la lista de tareas
 async function updateTaskList(newTask){
   try {
-    const response = await fetch("https://assets.breatheco.de/apis/fake/todos/user/DanielaPerdomo" ,{
+    const response = await fetch(URL_API ,{
       method : "PUT" ,
       headers: {"Content-Type": "application/json"} ,
       body: JSON.stringify(newTask)     //Quiero la nueva lista de tareas Actualiza la tareas con este array!!!
@@ -49,7 +49,7 @@ async function updateTaskList(newTask){
   // Metodo eliminar usuario DELETE / Borrar tareas
   async function deleteToDo(){
     try {
-      const response = await fetch(URLAPI , {
+      const response = await fetch(URL_API , {
         method: "DELETE",
         headers: {"Content-Type": "application/json"}
       })
@@ -132,5 +132,3 @@ async function updateTaskList(newTask){
   );
 };
 export default ToDoList;
-
-
