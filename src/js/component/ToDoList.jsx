@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const URL_API = "https://assets.breatheco.de/apis/fake/todos/user/DanielaPerdomo"
+const URL_API = "https://playground.4geeks.com/apis/fake/todos/user/DanielaPerdomo"
 const inicialTask =  {label: "", done: false}    // Tarea inicial
 const ToDoList = () => {
   const [newTask, setNewTask] = useState(inicialTask); //Nueva tarea
@@ -20,6 +20,10 @@ async function getToDo(){
     if (response.status == 404 ){
       createUser()
       return      // detener la funcion
+    }
+    if (response.status != 200){
+      console.log("hay un error en el Get")
+      return;
     }
     const body = await response.json() // Espera respuesta y la guarda en el Body
     setTaskList(body)
@@ -53,7 +57,7 @@ async function updateTaskList(newTask){
         method: "DELETE",
         headers: {"Content-Type": "application/json"}
       })
-      if (response.status != 200){
+      if (response.status != 201){
         console.log("No se pudo borrar las tareas")
         return
       } 
@@ -65,16 +69,16 @@ async function updateTaskList(newTask){
   // Metodo POST crear usuario
   async function createUser(){
     try {
-      const response = await fetch(URLAPI , {
+      const response = await fetch(URL_API , {
         method: "POST" ,
         headers: {"Content-Type": "application/json"} ,
         body: JSON.stringify([]) // DOCUMENTACION
       })
-      if(response.status != 200) {
+      if(response.status != 201) {
         console.log("No se creo el usuario")
         return
       }
-      getToDo() // LLAMAMOS NUEVAMNETE EL GET PARA CREAR Y TRAER LA LISTA CON EL USUARIO
+      getToDo() // LLAMAMOS NUEVAMENTE EL GET PARA CREAR Y TRAER LA LISTA CON EL USUARIO
     } catch (error) {
       console.log(error)
     }
